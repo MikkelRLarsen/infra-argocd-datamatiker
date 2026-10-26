@@ -9,6 +9,19 @@ local:
 infisical-standalone:
   infisical:
     replicaCount: 1
+    extraEnv:
+      - name: OTEL_TELEMETRY_COLLECTION_ENABLED
+        value: "true"
+      - name: OTEL_EXPORT_TYPE
+        value: prometheus
+      - name: OTEL_EXPORTER_PROMETHEUS_HOST
+        value: "0.0.0.0"
+      - name: OTEL_EXPORTER_PROMETHEUS_PORT
+        value: "9464"
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9464"
+      prometheus.io/path: /metrics
     service:
       type: ClusterIP
     kubeSecretRef: infisical-secrets
