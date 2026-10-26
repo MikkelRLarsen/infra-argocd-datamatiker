@@ -6,7 +6,7 @@ s3Ingress:
   enabled: true
   className: nginx
   host: seaweedfs.local
-  # Current minikube pod CIDR; these sources bypass ingress basic auth.
+  # Current minikube pod CIDR; allowed sources must also pass basic auth.
   allowedSourceRanges: "10.244.0.0/24"
   basicAuth:
     username: admin

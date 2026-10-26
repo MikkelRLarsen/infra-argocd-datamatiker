@@ -9,7 +9,6 @@ metadata:
     nginx.ingress.kubernetes.io/auth-secret: {{ printf "%s-ingress-auth" .Release.Name | quote }}
     nginx.ingress.kubernetes.io/auth-realm: SeaweedFS S3
     {{- if .Values.s3Ingress.allowedSourceRanges }}
-    nginx.ingress.kubernetes.io/satisfy: "any"
     nginx.ingress.kubernetes.io/whitelist-source-range: {{ .Values.s3Ingress.allowedSourceRanges | quote }}
     {{- end }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
