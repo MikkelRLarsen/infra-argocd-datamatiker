@@ -20,6 +20,9 @@ done
 if ! minikube status >/dev/null 2>&1; then
   echo "==> Starting minikube"
   minikube start --cpus="$MINIKUBE_CPUS" --memory="$MINIKUBE_MEMORY"
+
+  echo "==> Enable ingress"
+  minikube addons enable ingress
 fi
 kubectl config use-context minikube >/dev/null
 

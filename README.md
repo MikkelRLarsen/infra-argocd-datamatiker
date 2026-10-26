@@ -65,6 +65,38 @@ helm lint charts/grafana
 helm template grafana charts/grafana --namespace grafana > /tmp/grafana.yaml
 ```
 
+## Infisical and External Secrets Operator
+
+`apps/infisical` deploys Infisical with bundled PostgreSQL and Redis in the
+`infisical` namespace. `apps/external-secrets` installs ESO and its CRDs in the
+`external-secrets` namespace; ESO is a separate install, not bundled with Infisical.
+Both are discovered automatically by the root ApplicationSet.
+
+Before syncing Infisical, create its application keys once:
+
+```bash
+kubectl create namespace infisical
+kubectl -n infisical create secret generic infisical-secrets \
+  --from-literal=ENCRYPTION_KEY="$(openssl rand -hex 16)" \
+  --from-literal=AUTH_SECRET="$(openssl rand -hex 32)" \
+  --from-literal=SITE_URL=http://localhost:8080
+```
+
+Keep this Secret and the database PVC when reusing the installation; Infisical
+needs the same encryption key to decrypt stored secrets. This local setup uses
+the upstream chart's development PostgreSQL and Redis passwords and exposes no
+ingress. Open the UI after syncing:
+
+```bash
+kubectl -n infisical port-forward svc/infisical 8080:8080
+```
+
+Visit http://localhost:8080 to create your account and project. ESO still needs
+a `SecretStore` or `ClusterSecretStore` with Infisical machine identity credentials
+and an `ExternalSecret` for each secret to sync. Those depend on the project you
+create; installing the charts alone does not sync application credentials.
+See the [ESO Infisical provider documentation](https://external-secrets.io/latest/provider/infisical/).
+
 ## Layout
 
 ```

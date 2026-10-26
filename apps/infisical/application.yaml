@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infisical
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: infisical
+    app.kubernetes.io/component: application
+    app.kubernetes.io/managed-by: argocd
+    environment: non-prod
+    type: application
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/MikkelRLarsen/infra-argocd-datamatiker.git
+    targetRevision: main
+    path: charts/infisical
+    helm:
+      releaseName: infisical
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: infisical
+  # The upstream chart stamps the current time on every render.
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: infisical
+      jsonPointers:
+        - /metadata/annotations/updatedAt
+        - /spec/template/metadata/annotations/updatedAt
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - RespectIgnoreDifferences=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

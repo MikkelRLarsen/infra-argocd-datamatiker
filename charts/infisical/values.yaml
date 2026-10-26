@@ -1,0 +1,10 @@
+infisical-standalone:
+  infisical:
+    replicaCount: 1
+    service:
+      type: ClusterIP
+    kubeSecretRef: infisical-secrets
+  ingress:
+    enabled: false
+    nginx:
+      enabled: false
