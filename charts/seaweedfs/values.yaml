@@ -1,0 +1,94 @@
+adminCredentials:
+  username: admin
+  password: change-me-admin
+
+s3Ingress:
+  enabled: true
+  className: nginx
+  host: seaweedfs.local
+  # Current minikube pod CIDR; allowed sources must also pass basic auth.
+  allowedSourceRanges: "10.244.0.0/24"
+  basicAuth:
+    username: admin
+    password: change-me-s3
+  # Empty uses the ingress controller's default certificate.
+  tlsSecretName: ""
+
+seaweedfs:
+  master:
+    enabled: true
+    replicas: 1
+    metricsPort: 9327
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9327"
+      prometheus.io/path: /metrics
+    defaultReplication: "000"
+    data:
+      type: persistentVolumeClaim
+      size: 1Gi
+    logs:
+      type: emptyDir
+
+  volume:
+    enabled: true
+    replicas: 1
+    metricsPort: 9327
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9327"
+      prometheus.io/path: /metrics
+    dataDirs:
+      - name: data1
+        type: persistentVolumeClaim
+        size: 2Gi
+        maxVolumes: 8
+
+  filer:
+    enabled: true
+    replicas: 1
+    metricsPort: 9327
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9327"
+      prometheus.io/path: /metrics
+    defaultReplicaPlacement: "000"
+    data:
+      type: persistentVolumeClaim
+      size: 1Gi
+    logs:
+      type: emptyDir
+
+  s3:
+    enabled: true
+    replicas: 1
+    metricsPort: 9327
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9327"
+      prometheus.io/path: /metrics
+    logs:
+      type: emptyDir
+
+  admin:
+    enabled: true
+    replicas: 1
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "23646"
+      prometheus.io/path: /metrics
+    secret:
+      existingSecret: seaweedfs-admin
+      userKey: admin-user
+      pwKey: admin-password
+    data:
+      type: persistentVolumeClaim
+      size: 1Gi
+  worker:
+    enabled: true
+    replicas: 1
+    metricsPort: 9327
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9327"
+      prometheus.io/path: /metrics

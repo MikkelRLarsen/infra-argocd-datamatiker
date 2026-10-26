@@ -1,0 +1,10 @@
+apiVersion: v2
+name: seaweedfs
+description: SeaweedFS with one replica per component for local minikube.
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: seaweedfs
+    version: 4.21.0
+    repository: https://seaweedfs.github.io/seaweedfs/helm
