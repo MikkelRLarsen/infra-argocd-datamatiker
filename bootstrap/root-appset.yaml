@@ -30,7 +30,17 @@ spec:
       destination:
         server: https://kubernetes.default.svc
         namespace: argocd
+      # Preserve only the local Infisical Helm overrides set by bootstrap.
+      ignoreDifferences:
+        - group: argoproj.io
+          kind: Application
+          name: infisical
+          namespace: argocd
+          jsonPointers:
+            - /spec/source/helm/parameters
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
+        syncOptions:
+          - RespectIgnoreDifferences=true

@@ -20,11 +20,15 @@ done
 if ! minikube status >/dev/null 2>&1; then
   echo "==> Starting minikube"
   minikube start --cpus="$MINIKUBE_CPUS" --memory="$MINIKUBE_MEMORY"
-
-  echo "==> Enable ingress"
-  minikube addons enable ingress
 fi
 kubectl config use-context minikube >/dev/null
+
+MINIKUBE_IP="$(minikube ip)"
+INFISICAL_HOST="infisical.${MINIKUBE_IP}.nip.io"
+INFISICAL_SITE_URL="http://${INFISICAL_HOST}"
+
+echo "==> Enabling ingress"
+minikube addons enable ingress
 
 echo "==> Installing Argo CD from charts/argocd"
 helm dependency update "$ARGOCD_CHART" >/dev/null
@@ -32,6 +36,13 @@ helm upgrade --install argocd "$ARGOCD_CHART" \
   --namespace argocd --create-namespace \
   --values "$ARGOCD_CHART/values.yaml" \
   --wait
+
+echo "==> Configuring Infisical for this minikube cluster"
+# Argo CD deploys the chart's Secret and ingress; bootstrap only supplies local values.
+# The pod annotation ensures a hostname change also restarts Infisical.
+kubectl patch --local -f "$REPO_ROOT/apps/infisical/application.yaml" --type=merge \
+  -p "{\"spec\":{\"source\":{\"helm\":{\"parameters\":[{\"name\":\"local.host\",\"value\":\"$INFISICAL_HOST\"},{\"name\":\"infisical-standalone.infisical.podAnnotations.local-site-url\",\"value\":\"$INFISICAL_SITE_URL\"}]}}}}" \
+  -o yaml | kubectl apply -f -
 
 echo "==> Applying root ApplicationSet"
 kubectl apply -f "$REPO_ROOT/bootstrap/root-appset.yaml"
@@ -45,3 +56,6 @@ echo
 echo "Open the UI with:"
 echo "  kubectl -n argocd port-forward svc/argocd-server 8080:80"
 echo "  http://localhost:8080"
+
+echo
+echo "Infisical (after Argo CD syncs): $INFISICAL_SITE_URL"

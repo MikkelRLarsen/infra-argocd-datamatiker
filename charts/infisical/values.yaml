@@ -1,3 +1,11 @@
+# Local development credentials, intentionally tracked in Git.
+# bootstrap/install.sh overrides the hostname for the current minikube IP.
+local:
+  host: infisical.192.168.49.2.nip.io
+  ingressClassName: nginx
+  encryptionKey: a34953b4f3c2ff1d05aeb0b72345abae
+  authSecret: 554DQHBb0ZTysAP0DihOwpPciRfJrRwyWwoA6VMlrrw=
+
 infisical-standalone:
   infisical:
     replicaCount: 1
