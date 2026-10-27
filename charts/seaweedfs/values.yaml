@@ -1,6 +1,11 @@
-adminCredentials:
-  username: admin
-  password: change-me-admin
+externalSecrets:
+  storeName: infisical-seaweedfs-dev
+  refreshInterval: 1m
+  data:
+    - secretKey: admin-password
+      remoteKey: ADMIN_PASSWORD
+  templateData:
+    admin-user: admin
 
 seaweedfs:
   master:

@@ -1,2 +1,16 @@
 external-secrets:
   installCRDs: true
+
+infisical:
+  hostAPI: http://infisical-infisical-standalone-infisical.infisical.svc:8080
+  # Bootstrap exception: create this Secret after configuring the machine identity.
+  credentialsSecretName: infisical-eso-credentials
+
+stores:
+  - name: infisical-grafana-dev
+    projectSlug: Grafana
+    envSlug: dev
+
+  - name: infisical-seaweedfs-dev
+    projectSlug: Seaweedfs
+    envSlug: dev

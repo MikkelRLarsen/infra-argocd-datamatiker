@@ -42,17 +42,22 @@ grafana:
     limits:
       memory: 512Mi
 
-# Hardcoded for local minikube; replaces the company ExternalSecret.
-envSecret:
+# Values stay in Infisical; Git declares only the store, keys, and public settings.
+externalSecrets:
+  storeName: infisical-grafana-dev
   secretName: grafana
-  values:
+  refreshInterval: 1m
+  data:
+    - secretKey: POSTGRES_PASSWORD
+      remoteKey: POSTGRES_PASSWORD
+    - secretKey: GRAFANA_ADMIN_PASSWORD
+      remoteKey: GRAFANA_ADMIN_PASSWORD
+  templateData:
     POSTGRES_DB: grafana
     POSTGRES_USER: grafana
-    POSTGRES_PASSWORD: minikube-postgres
     POSTGRES_HOSTNAME: grafana-postgres
     POSTGRES_PORT: "5432"
     GRAFANA_ADMIN_USERNAME: admin
-    GRAFANA_ADMIN_PASSWORD: minikube-admin
 
 postgres:
   enabled: true
