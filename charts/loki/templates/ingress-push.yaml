@@ -1,4 +1,4 @@
-/statu{{- if .Values.pushIngress.enabled }}
+{{- if .Values.pushIngress.enabled }}
 {{- $ing := .Values.pushIngress }}
 {{- if not .Values.pushAuth.enabled }}
 {{- fail "pushIngress requires pushAuth.enabled=true" }}
