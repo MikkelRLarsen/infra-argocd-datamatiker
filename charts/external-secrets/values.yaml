@@ -18,3 +18,73 @@ stores:
   - name: infisical-loki-dev
     projectSlug: loki
     envSlug: dev
+
+  - name: infisical-bootstrap-dev
+    projectSlug: bootstrap
+    envSlug: dev
+
+pushSecrets:
+  enabled: true
+  clusterSecretStore: infisical-bootstrap-dev
+  refreshInterval: 5m
+  sources:
+    - name: infisical-app-bootstrap
+      namespace: infisical
+      secretName: infisical-secrets
+      data:
+        - secretKey: ENCRYPTION_KEY
+          remoteKey: INFISICAL_ENCRYPTION_KEY
+        - secretKey: AUTH_SECRET
+          remoteKey: INFISICAL_AUTH_SECRET
+
+    - name: infisical-postgres-bootstrap
+      namespace: infisical
+      secretName: postgresql
+      data:
+        - secretKey: password
+          remoteKey: INFISICAL_POSTGRES_PASSWORD
+        - secretKey: postgres-password
+          remoteKey: INFISICAL_POSTGRES_ADMIN_PASSWORD
+
+    - name: infisical-redis-bootstrap
+      namespace: infisical
+      secretName: redis
+      data:
+        - secretKey: redis-password
+          remoteKey: INFISICAL_REDIS_PASSWORD
+
+    - name: eso-client-bootstrap
+      namespace: external-secrets
+      secretName: infisical-eso-credentials
+      data:
+        - secretKey: clientId
+          remoteKey: ESO_CLIENT_ID
+        - secretKey: clientSecret
+          remoteKey: ESO_CLIENT_SECRET
+
+    - name: argocd-core-bootstrap
+      namespace: argocd
+      secretName: argocd-secret
+      data:
+        - secretKey: server.secretkey
+          remoteKey: ARGOCD_SERVER_SECRET_KEY
+        - secretKey: admin.password
+          remoteKey: ARGOCD_ADMIN_PASSWORD_HASH
+        - secretKey: admin.passwordMtime
+          remoteKey: ARGOCD_ADMIN_PASSWORD_MTIME
+
+    - name: argocd-redis-bootstrap
+      namespace: argocd
+      secretName: argocd-redis
+      data:
+        - secretKey: auth
+          remoteKey: ARGOCD_REDIS_PASSWORD
+
+    # Remove this entry if you delete Argo CD's initial admin Secret after setup.
+    # Its password is the initial password, not necessarily the current password.
+    - name: argocd-initial-admin-bootstrap
+      namespace: argocd
+      secretName: argocd-initial-admin-secret
+      data:
+        - secretKey: password
+          remoteKey: ARGOCD_INITIAL_ADMIN_PASSWORD
