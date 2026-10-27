@@ -11,7 +11,17 @@ k8s-monitoring:
 
     loki-logs:
       type: loki
-      url: "http://loki.loki:3100/loki/api/v1/push"
+      url: "https://loki.192.168.49.2.nip.io/loki/api/v1/push"
+      auth:
+        type: basic
+        usernameKey: username
+        passwordKey: password
+      secret:
+        create: false
+        name: alloy-loki-auth
+        namespace: k8s-monitoring
+      tls:
+        insecureSkipVerify: true
 
   #
   # CLUSTER METRICS
@@ -527,3 +537,11 @@ k8s-monitoring:
           k8s.grafana.com/logs.job: integrations/alloys
   alloy-operator:
     deploy: true
+# Must match a spoke in charts/loki/values.yaml; the password value stays in Infisical.
+externalSecret:
+  enabled: true
+  secretName: alloy-loki-auth
+  clusterSecretStore: infisical-loki-dev
+  refreshInterval: 5m
+  username: workload-dev
+  passwordKey: workload_dev_rw_password

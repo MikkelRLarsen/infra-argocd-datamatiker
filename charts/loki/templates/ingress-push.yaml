@@ -1,0 +1,42 @@
+/statu{{- if .Values.pushIngress.enabled }}
+{{- $ing := .Values.pushIngress }}
+{{- if not .Values.pushAuth.enabled }}
+{{- fail "pushIngress requires pushAuth.enabled=true" }}
+{{- end }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-push
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/component: push-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: {{ printf "%s-push-auth" .Release.Name | quote }}
+    nginx.ingress.kubernetes.io/auth-realm: loki push
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "32m"
+    {{- with $ing.sourceRange }}
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{ . | quote }}
+    {{- end }}
+spec:
+  ingressClassName: {{ $ing.ingressClassName | quote }}
+  tls:
+    - hosts:
+        - {{ required "pushIngress.host must be set" $ing.host | quote }}
+      {{- with $ing.tlsSecretName }}
+      secretName: {{ . | quote }}
+      {{- end }}
+  rules:
+    - host: {{ $ing.host | quote }}
+      http:
+        paths:
+          - path: /loki/api/v1/push
+            pathType: Exact
+            backend:
+              service:
+                name: loki
+                port:
+                  number: 3100
+{{- end }}

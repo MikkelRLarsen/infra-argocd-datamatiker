@@ -14,3 +14,7 @@ stores:
   - name: infisical-seaweedfs-dev
     projectSlug: seaweedfs
     envSlug: dev
+
+  - name: infisical-loki-dev
+    projectSlug: loki
+    envSlug: dev

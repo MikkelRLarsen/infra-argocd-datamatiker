@@ -57,3 +57,19 @@ loki:
     replicas: 0
   write:
     replicas: 0
+
+
+pushIngress:
+  enabled: true
+  host: loki.192.168.49.2.nip.io
+  ingressClassName: nginx
+  tlsSecretName: ""
+  sourceRange: ""
+
+pushAuth:
+  enabled: true
+  clusterSecretStore: infisical-loki-dev
+  refreshInterval: 5m
+  spokes:
+    - username: workload-dev
+      passwordKey: workload_dev_rw_password
