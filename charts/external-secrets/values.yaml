@@ -4,6 +4,12 @@ external-secrets:
 infisical:
   hostAPI: http://infisical-infisical-standalone-infisical.infisical.svc:8080
   # Bootstrap exception: create this Secret after configuring the machine identity.
+  # Note to self. Apply by:
+  # kubectl -n external-secrets create secret generic infisical-eso-credentials \
+  # --from-literal=clientId='<client-id>' \
+  # --from-literal=clientSecret='<client-secret>' \
+  # --dry-run=client -o yaml | kubectl apply -f -
+
   credentialsSecretName: infisical-eso-credentials
 
 stores:
@@ -80,8 +86,6 @@ pushSecrets:
         - secretKey: auth
           remoteKey: ARGOCD_REDIS_PASSWORD
 
-    # Remove this entry if you delete Argo CD's initial admin Secret after setup.
-    # Its password is the initial password, not necessarily the current password.
     - name: argocd-initial-admin-bootstrap
       namespace: argocd
       secretName: argocd-initial-admin-secret
