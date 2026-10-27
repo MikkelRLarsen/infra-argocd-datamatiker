@@ -8,9 +8,9 @@ infisical:
 
 stores:
   - name: infisical-grafana-dev
-    projectSlug: Grafana
+    projectSlug: grafana-xa-11
     envSlug: dev
 
   - name: infisical-seaweedfs-dev
-    projectSlug: Seaweedfs
+    projectSlug: seaweedfs-1-si-6
     envSlug: dev
