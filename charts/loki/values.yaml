@@ -30,7 +30,7 @@ loki:
             prefix: loki_index_
             period: 24h
         # Deploy before this date (00:00 UTC); move forward if setup is delayed.
-        - from: "2026-10-30"
+        - from: "2026-10-29"
           store: tsdb
           object_store: s3
           schema: v13
