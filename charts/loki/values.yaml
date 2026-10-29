@@ -58,7 +58,7 @@ loki:
       prometheus.io/container: "loki"
 
   singleBinary:
-    replicas: 1
+    replicas: 0
     extraArgs:
       - -config.expand-env=true
     extraEnvFrom:
