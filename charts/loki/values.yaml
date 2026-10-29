@@ -21,6 +21,8 @@ loki:
     rulerConfig:
       storage:
         type: local
+        local:
+          directory: /rules
 
     ingester:
       wal:
