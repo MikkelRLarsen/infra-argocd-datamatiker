@@ -58,7 +58,7 @@ loki:
       prometheus.io/container: "loki"
 
   singleBinary:
-    replicas: 0
+    replicas: 1
     extraArgs:
       - -config.expand-env=true
     extraEnvFrom:
@@ -66,7 +66,7 @@ loki:
           name: loki-s3-credentials
     persistence:
       enabled: true
-      size: 3Gi
+      size: 1Gi
     terminationGracePeriodSeconds: 300
 
   gateway:
