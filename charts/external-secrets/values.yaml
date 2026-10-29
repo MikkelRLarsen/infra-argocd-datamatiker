@@ -25,6 +25,10 @@ stores:
     projectSlug: loki
     envSlug: dev
 
+  - name: infisical-prometheus-dev
+    projectSlug: prometheus
+    envSlug: dev
+
   - name: infisical-bootstrap-dev
     projectSlug: bootstrap
     envSlug: dev

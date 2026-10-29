@@ -59,3 +59,18 @@ prometheus:
       enabled: false
     kubernetes-pods-slow:
       enabled: false
+
+pushIngress:
+  enabled: true
+  host: prometheus.192.168.49.2.nip.io
+  ingressClassName: nginx
+  tlsSecretName: ""
+  sourceRange: ""
+
+pushAuth:
+  enabled: true
+  clusterSecretStore: infisical-prometheus-dev
+  refreshInterval: 5m
+  spokes:
+    - username: workload-dev
+      passwordKey: workload_dev_rw_password
