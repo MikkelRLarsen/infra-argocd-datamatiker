@@ -5,10 +5,22 @@ loki:
   loki:
     auth_enabled: false
     commonConfig:
-      replication_factor: 1
+      replication_factor: 3
     storage:
-      # Retain the filesystem backend for the existing schema and local rules.
-      type: filesystem
+      type: s3
+      bucketNames:
+        chunks: loki-chunks
+      s3:
+        endpoint: seaweedfs-s3.seaweedfs.svc.cluster.local:8333
+        region: us-east-1
+        accessKeyId: ${LOKI_S3_ACCESS_KEY_ID}
+        secretAccessKey: ${LOKI_S3_SECRET_ACCESS_KEY}
+        s3ForcePathStyle: true
+        insecure: true
+
+    rulerConfig:
+      storage:
+        type: local
 
     ingester:
       wal:
@@ -16,14 +28,9 @@ loki:
         flush_on_shutdown: true
 
     storage_config:
-      aws:
-        endpoint: seaweedfs-s3.seaweedfs.svc.cluster.local:8333
-        region: us-east-1
-        bucketnames: loki-chunks
-        access_key_id: ${LOKI_S3_ACCESS_KEY_ID}
-        secret_access_key: ${LOKI_S3_SECRET_ACCESS_KEY}
-        s3forcepathstyle: true
-        insecure: true
+      # Preserve the backend definition for the historical filesystem schema.
+      filesystem:
+        directory: /var/loki/chunks
 
     schemaConfig:
       configs:
@@ -49,7 +56,7 @@ loki:
     compactor:
       working_directory: /var/loki/compactor
       retention_enabled: true
-      delete_request_store: filesystem
+      delete_request_store: s3
 
     podAnnotations:
       prometheus.io/scrape: "true"
@@ -58,7 +65,11 @@ loki:
       prometheus.io/container: "loki"
 
   singleBinary:
-    replicas: 1
+    replicas: 3
+    # Remove chart-default anti-affinity for single-node Minikube.
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution: []
     extraArgs:
       - -config.expand-env=true
     extraEnvFrom:
@@ -73,9 +84,19 @@ loki:
     enabled: false
 
   chunksCache:
-    enabled: false
+    enabled: true
+    replicas: 1
+    allocatedMemory: 256
+    allocatedCPU: 100m
+    writebackSizeLimit: 32MB
+    writebackBuffer: 10000
   resultsCache:
-    enabled: false
+    enabled: true
+    replicas: 1
+    allocatedMemory: 128
+    allocatedCPU: 100m
+    writebackSizeLimit: 32MB
+    writebackBuffer: 10000
 
   test:
     enabled: false
