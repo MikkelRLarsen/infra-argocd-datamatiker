@@ -69,7 +69,6 @@ seaweedfs:
   admin:
     enabled: true
     replicas: 1
-    affinity: ""
     podAnnotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "23646"
@@ -84,7 +83,6 @@ seaweedfs:
   worker:
     enabled: true
     replicas: 1
-    affinity: ""
     metricsPort: 9327
     podAnnotations:
       prometheus.io/scrape: "true"
