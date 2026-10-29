@@ -10,6 +10,11 @@ loki:
       # Retain the filesystem backend for the existing schema and local rules.
       type: filesystem
 
+    ingester:
+      wal:
+        enabled: true
+        flush_on_shutdown: true
+
     storage_config:
       aws:
         endpoint: seaweedfs-s3.seaweedfs.svc.cluster.local:8333
@@ -62,6 +67,7 @@ loki:
     persistence:
       enabled: true
       size: 3Gi
+    terminationGracePeriodSeconds: 300
 
   gateway:
     enabled: false
