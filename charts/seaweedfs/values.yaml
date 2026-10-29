@@ -10,13 +10,13 @@ externalSecrets:
 seaweedfs:
   master:
     enabled: true
-    replicas: 1
+    replicas: 3
     metricsPort: 9327
     podAnnotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "9327"
       prometheus.io/path: /metrics
-    defaultReplication: "000"
+    defaultReplication: "001"
     data:
       type: persistentVolumeClaim
       size: 1Gi
@@ -25,7 +25,7 @@ seaweedfs:
 
   volume:
     enabled: true
-    replicas: 1
+    replicas: 2
     metricsPort: 9327
     podAnnotations:
       prometheus.io/scrape: "true"
@@ -39,13 +39,13 @@ seaweedfs:
 
   filer:
     enabled: true
-    replicas: 1
+    replicas: 2
     metricsPort: 9327
     podAnnotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "9327"
       prometheus.io/path: /metrics
-    defaultReplicaPlacement: "000"
+    defaultReplicaPlacement: "001"
     data:
       type: persistentVolumeClaim
       size: 1Gi
@@ -54,7 +54,7 @@ seaweedfs:
 
   s3:
     enabled: true
-    replicas: 1
+    replicas: 2
     metricsPort: 9327
     podAnnotations:
       prometheus.io/scrape: "true"
