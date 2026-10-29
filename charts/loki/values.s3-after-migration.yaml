@@ -1,5 +1,3 @@
-# Standalone reference snapshot after S3 migration: one SingleBinary replica.
-# The 1Gi PVC holds WAL and local working state; durable log storage is S3.
 loki:
   deploymentMode: SingleBinary
 
