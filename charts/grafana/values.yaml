@@ -49,7 +49,7 @@ grafana:
         - name: Loki-ingress
           uid: loki-ingress
           type: loki
-          url: http://loki.192.168.49.2.nip.io
+          url: https://loki.192.168.49.2.nip.io
           access: proxy
 
           basicAuth: true
