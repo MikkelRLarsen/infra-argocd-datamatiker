@@ -84,4 +84,20 @@ spec:
                 name: loki
                 port:
                   number: 3100
+
+          - path: /loki/api/v1/detected_labels
+            pathType: Exact
+            backend:
+              service:
+                name: loki
+                port:
+                  number: 3100
+
+          - path: /loki/api/v1/drilldown-limits
+            pathType: Exact
+            backend:
+              service:
+                name: loki
+                port:
+                  number: 3100
 {{- end }}
