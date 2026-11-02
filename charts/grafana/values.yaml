@@ -57,6 +57,7 @@ grafana:
 
           jsonData:
             tlsSkipVerify: true
+            httpHeaderName1: X-Scope-OrgID
 
           secureJsonData:
             basicAuthPassword: $LOKI_DEV_PASSWORD
