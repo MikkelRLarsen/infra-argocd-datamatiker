@@ -112,7 +112,7 @@ loki:
 
 s3Credentials:
   enabled: true
-  clusterSecretStore: infisical-loki-dev
+  clusterSecretStore: infisical-loki-dev-root
   refreshInterval: 5m
   data:
     - secretKey: LOKI_S3_ACCESS_KEY_ID

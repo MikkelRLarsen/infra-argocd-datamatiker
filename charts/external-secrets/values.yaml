@@ -26,6 +26,10 @@ stores:
     envSlug: dev
     secretsPath: /secrets
 
+  - name: infisical-loki-dev-root
+    projectSlug: loki
+    envSlug: dev
+
   - name: infisical-prometheus-dev
     projectSlug: prometheus
     envSlug: dev
