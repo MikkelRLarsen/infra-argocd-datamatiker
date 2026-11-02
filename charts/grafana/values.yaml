@@ -55,6 +55,9 @@ grafana:
           basicAuth: true
           basicAuthUser: $LOKI_DEV_USERNAME
 
+          jsonData:
+            tlsSkipVerify: true
+
           secureJsonData:
             basicAuthPassword: $LOKI_DEV_PASSWORD
 
