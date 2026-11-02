@@ -56,7 +56,7 @@ grafana:
           basicAuthUser: $LOKI_DEV_USERNAME
 
           secureJsonData:
-            basicAuthPassword: $LOKI_DEV_READ_PASSWORD
+            basicAuthPassword: $LOKI_DEV_PASSWORD
 
   resources:
     requests:
