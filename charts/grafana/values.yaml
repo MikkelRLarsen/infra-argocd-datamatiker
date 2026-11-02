@@ -60,6 +60,7 @@ grafana:
 
           secureJsonData:
             basicAuthPassword: $LOKI_DEV_PASSWORD
+            httpHeaderValue1: fake
 
   resources:
     requests:
