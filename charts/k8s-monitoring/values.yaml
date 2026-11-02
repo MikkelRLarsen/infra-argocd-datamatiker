@@ -556,10 +556,8 @@ externalSecret:
       secretName: alloy-loki-auth
       clusterSecretStore: infisical-loki-dev
       username: workload-dev
-      passwordKey: workload_dev_rw_password
 
     prometheus:
       secretName: alloy-prometheus-auth
       clusterSecretStore: infisical-prometheus-dev
       username: workload-dev
-      passwordKey: workload_dev_rw_password

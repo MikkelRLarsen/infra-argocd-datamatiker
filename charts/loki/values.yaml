@@ -133,4 +133,3 @@ pushAuth:
   refreshInterval: 5m
   spokes:
     - username: workload-dev
-      passwordKey: workload_dev_rw_password
