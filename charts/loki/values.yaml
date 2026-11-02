@@ -127,9 +127,23 @@ pushIngress:
   tlsSecretName: ""
   sourceRange: ""
 
+datasourceIngress:
+  enabled: true
+  host: loki.192.168.49.2.nip.io
+  ingressClassName: nginx
+  tlsSecretName: ""
+  sourceRange: ""
+
 pushAuth:
   enabled: true
   clusterSecretStore: infisical-loki-dev
   refreshInterval: 5m
   spokes:
     - username: workload-dev
+
+datasourceAuth:
+  enabled: true
+  clusterSecretStore: infisical-loki-dev-root
+  refreshInterval: 5m
+  spokes:
+    - username: grafana-dev

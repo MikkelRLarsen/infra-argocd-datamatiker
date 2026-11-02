@@ -6,6 +6,17 @@ grafana:
 
   envFromSecret: grafana
 
+  envValueFrom:
+    LOKI_DEV_USERNAME:
+      secretKeyRef:
+        name: grafana-loki-dev-read-auth
+        key: username
+
+    LOKI_DEV_PASSWORD:
+      secretKeyRef:
+        name: grafana-loki-dev-read-auth
+        key: password
+
   grafana.ini:
     database:
       type: postgres
@@ -35,6 +46,18 @@ grafana:
           url: http://loki.loki:3100
           access: proxy
 
+        - name: Loki-ingress
+          uid: loki-ingress
+          type: loki
+          url: http://loki.192.168.49.2.nip.io
+          access: proxy
+
+          basicAuth: true
+          basicAuthUser: $LOKI_DEV_USERNAME
+
+          secureJsonData:
+            basicAuthPassword: $LOKI_DEV_READ_PASSWORD
+
   resources:
     requests:
       cpu: 100m
@@ -58,6 +81,15 @@ externalSecrets:
     POSTGRES_HOSTNAME: grafana-postgres
     POSTGRES_PORT: "5432"
     GRAFANA_ADMIN_USERNAME: admin
+
+externalSecretRead:
+  enabled: true
+  refreshInterval: 5m
+  items:
+    loki-dev:
+      secretName: grafana-loki-dev-read-auth
+      clusterSecretStore: infisical-loki-dev-root
+      username: grafana-dev
 
 postgres:
   enabled: true

@@ -1,0 +1,87 @@
+{{- if .Values.datasourceIngress.enabled }}
+{{- $ing := .Values.datasourceIngress }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-datasource
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/component: datasource-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: {{ printf "%s-datasource-auth" .Release.Name | quote }}
+    nginx.ingress.kubernetes.io/auth-realm: loki datasource
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "32m"
+    {{- with $ing.sourceRange }}
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{ . | quote }}
+    {{- end }}
+spec:
+  ingressClassName: {{ $ing.ingressClassName | quote }}
+  tls:
+    - hosts:
+        - {{ required "datasourceIngress.host must be set" $ing.host | quote }}
+      {{- with $ing.tlsSecretName }}
+      secretName: {{ . | quote }}
+      {{- end }}
+  rules:
+    - host: {{ $ing.host | quote }}
+      http:
+        paths:
+          - path: /loki/api/v1/query
+            pathType: Exact
+            backend:
+              service:
+                name: loki
+                port:
+                  number: 3100
+
+          - path: /loki/api/v1/query_range
+            pathType: Exact
+            backend:
+              service:
+                name: loki
+                port:
+                  number: 3100
+
+          - path: /loki/api/v1/labels
+            pathType: Exact
+            backend:
+              service:
+                name: loki
+                port:
+                  number: 3100
+
+          - path: /loki/api/v1/label/
+            pathType: Prefix
+            backend:
+              service:
+                name: loki
+                port:
+                  number: 3100
+
+          - path: /loki/api/v1/series
+            pathType: Exact
+            backend:
+              service:
+                name: loki
+                port:
+                  number: 3100
+
+          - path: /loki/api/v1/index/
+            pathType: Prefix
+            backend:
+              service:
+                name: loki
+                port:
+                  number: 3100
+
+          - path: /loki/api/v1/patterns
+            pathType: Exact
+            backend:
+              service:
+                name: loki
+                port:
+                  number: 3100
+{{- end }}
