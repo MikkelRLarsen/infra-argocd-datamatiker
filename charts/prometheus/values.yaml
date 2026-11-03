@@ -8,7 +8,7 @@ prometheus:
       storage.tsdb.max-block-duration: 2h
     sidecarTemplateValues:
       s3:
-        bucket: thanos-chunks
+        bucket: prometheus-chunks
         region: us-east-1
         endpoint: seaweedfs-s3.seaweedfs.svc.cluster.local:8333
     sidecarContainers:
