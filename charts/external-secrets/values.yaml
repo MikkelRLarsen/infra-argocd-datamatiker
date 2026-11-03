@@ -38,6 +38,10 @@ stores:
     projectSlug: bootstrap
     envSlug: dev
 
+  - name: infisical-prometheus
+    projectSlug: prometheus
+    envSlug: dev
+
 pushSecrets:
   enabled: true
   clusterSecretStore: infisical-bootstrap-dev

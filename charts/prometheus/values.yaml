@@ -1,5 +1,67 @@
 prometheus:
   server:
+    global:
+      external_labels:
+        prometheus_cluster: minikube
+    extraArgs:
+      storage.tsdb.min-block-duration: 2h
+      storage.tsdb.max-block-duration: 2h
+    sidecarTemplateValues:
+      s3:
+        bucket: thanos-chunks
+        region: us-east-1
+        endpoint: seaweedfs-s3.seaweedfs.svc.cluster.local:8333
+    sidecarContainers:
+      thanos: |
+        image: quay.io/thanos/thanos:v0.40.0
+        args:
+          - sidecar
+          - --prometheus.url=http://localhost:9090
+          - --tsdb.path=/data
+          # Temporary migration flag: remove after historical blocks are uploaded.
+          - --shipper.upload-compacted
+          - |-
+            --objstore.config=type: S3
+            config:
+              bucket: {{ required "prometheus.server.sidecarTemplateValues.s3.bucket is required" .Values.server.sidecarTemplateValues.s3.bucket | quote }}
+              region: {{ required "prometheus.server.sidecarTemplateValues.s3.region is required" .Values.server.sidecarTemplateValues.s3.region | quote }}
+              endpoint: {{ required "prometheus.server.sidecarTemplateValues.s3.endpoint is required" .Values.server.sidecarTemplateValues.s3.endpoint | quote }}
+              aws_sdk_auth: true
+              # Internal SeaweedFS serves S3 over HTTP with path-style buckets.
+              insecure: true
+              bucket_lookup_type: path
+          - --http-address=0.0.0.0:10902
+          - --grpc-address=127.0.0.1:10901
+        envFrom:
+          - secretRef:
+              name: thanos-s3-credentials
+        # AWS SDK authentication expects these standard environment names.
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            value: $(THANOS_S3_ACCESS_KEY_ID)
+          - name: AWS_SECRET_ACCESS_KEY
+            value: $(THANOS_S3_SECRET_ACCESS_KEY)
+        ports:
+          - name: thanos-http
+            containerPort: 10902
+        volumeMounts:
+          - name: storage-volume
+            mountPath: /data
+        readinessProbe:
+          httpGet:
+            path: /-/ready
+            port: thanos-http
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: thanos-http
+          initialDelaySeconds: 30
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
     retention: "3d"
     retentionSize: "1800MB"
     # extraArgs with a null value is dropped when passed to a subchart.
@@ -73,3 +135,13 @@ pushAuth:
   refreshInterval: 5m
   spokes:
     - username: workload-dev
+
+s3Credentials:
+  enabled: true
+  clusterSecretStore: infisical-prometheus
+  refreshInterval: 5m
+  data:
+    - secretKey: THANOS_S3_ACCESS_KEY_ID
+      remoteKey: THANOS_S3_ACCESS_KEY_ID
+    - secretKey: THANOS_S3_SECRET_ACCESS_KEY
+      remoteKey: THANOS_S3_SECRET_ACCESS_KEY
