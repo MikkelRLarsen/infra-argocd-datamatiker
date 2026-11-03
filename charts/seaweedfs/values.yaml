@@ -37,7 +37,7 @@ seaweedfs:
       - name: data1
         type: persistentVolumeClaim
         size: 2Gi
-        maxVolumes: 8
+        maxVolumes: 24
 
   filer:
     enabled: true
