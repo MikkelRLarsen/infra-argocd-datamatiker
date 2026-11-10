@@ -7,6 +7,19 @@ local:
   authSecret: 554DQHBb0ZTysAP0DihOwpPciRfJrRwyWwoA6VMlrrw=
 
 infisical-standalone:
+  # Worker-node hostPath mounts can start root-owned in multi-node Minikube.
+  postgresql:
+    volumePermissions:
+      enabled: true
+      image:
+        registry: mirror.gcr.io
+        repository: bitnamilegacy/os-shell
+  redis:
+    volumePermissions:
+      enabled: true
+      image:
+        registry: mirror.gcr.io
+        repository: bitnamilegacy/os-shell
   infisical:
     replicaCount: 1
     extraEnv:
