@@ -9,9 +9,6 @@ metadata:
     app.kubernetes.io/name: thanos
     app.kubernetes.io/component: ui-ingress
   annotations:
-    nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: {{ printf "%s-ui-auth" .Release.Name | quote }}
-    nginx.ingress.kubernetes.io/auth-realm: thanos UI
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "32m"
     {{- with $ing.sourceRange }}

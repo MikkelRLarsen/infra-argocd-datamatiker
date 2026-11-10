@@ -22,9 +22,6 @@ uiIngress:
   ingressClassName: nginx
   tlsSecretName: ""
   sourceRange: ""
-uiAuth:
-  users:
-    - username: admin
 
 thanos:
   fullnameOverride: thanos
