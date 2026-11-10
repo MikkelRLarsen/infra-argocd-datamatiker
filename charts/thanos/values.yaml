@@ -23,6 +23,13 @@ uiIngress:
   tlsSecretName: ""
   sourceRange: ""
 
+bucketWebIngress:
+  enabled: true
+  host: thanos-bucket.192.168.49.2.nip.io
+  ingressClassName: nginx
+  tlsSecretName: ""
+  sourceRange: ""
+
 thanos:
   fullnameOverride: thanos
   global:
