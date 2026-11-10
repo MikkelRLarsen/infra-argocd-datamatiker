@@ -16,20 +16,6 @@ pushAuth:
   spokes:
     - username: workload-dev
 
-uiIngress:
-  enabled: true
-  host: thanos.192.168.49.2.nip.io
-  ingressClassName: nginx
-  tlsSecretName: ""
-  sourceRange: ""
-
-bucketWebIngress:
-  enabled: true
-  host: thanos-bucket.192.168.49.2.nip.io
-  ingressClassName: nginx
-  tlsSecretName: ""
-  sourceRange: ""
-
 thanos:
   fullnameOverride: thanos
   global:
@@ -100,10 +86,7 @@ thanos:
     enabled: false
 
   bucket:
-    enabled: true
-    bucketweb:
-      enabled: true
-      replicaCount: 1
+    enabled: false
 
   rustfs:
     enabled: false
