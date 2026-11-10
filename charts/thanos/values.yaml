@@ -1,0 +1,110 @@
+# Create project slug `thanos`, environment `dev`, and grant the ESO identity read access.
+externalSecrets:
+  clusterSecretStore: infisical-thanos-dev
+  refreshInterval: 5m
+  # Plain S3 credentials in Infisical; ESO exposes these as AWS environment variables.
+  s3AccessKey: S3_ACCESS_KEY
+  s3SecretKey: S3_SECRET_KEY
+
+pushIngress:
+  enabled: true
+  host: thanos-receive.192.168.49.2.nip.io
+  ingressClassName: nginx
+  tlsSecretName: ""
+  sourceRange: ""
+pushAuth:
+  spokes:
+    - username: workload-dev
+      passwordKey: workload_dev_rw_password
+
+uiIngress:
+  enabled: true
+  host: thanos.192.168.49.2.nip.io
+  ingressClassName: nginx
+  tlsSecretName: ""
+  sourceRange: ""
+uiAuth:
+  users:
+    - username: admin
+      passwordKey: UI_ADMIN_PASSWORD
+
+thanos:
+  fullnameOverride: thanos
+  global:
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "10902"
+      prometheus.io/path: /metrics
+    thanosRules:
+      enabled: false
+    extraEnv:
+      - name: AWS_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: thanos-s3
+            key: AWS_ACCESS_KEY_ID
+      - name: AWS_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: thanos-s3
+            key: AWS_SECRET_ACCESS_KEY
+    # Thanos still needs a config file for the bucket and endpoint.
+    # This chart-generated Secret contains no credentials.
+    objstore:
+      createSecret: true
+      secretName: thanos-objstore
+      secretKey: objstore.yml
+      config: |
+        type: S3
+        config:
+          bucket: thanos-chunks
+          endpoint: seaweedfs-s3.seaweedfs.svc.cluster.local:8333
+          region: us-east-1
+          insecure: true
+          aws_sdk_auth: true
+
+  query:
+    enabled: true
+    replicaCount: 1
+    service:
+      httpPort: 10902
+
+  queryFrontend:
+    enabled: false
+
+  receive:
+    enabled: true
+    mode: standalone
+    replicaCount: 1
+    persistence:
+      enabled: true
+      size: 2Gi
+
+  storegateway:
+    enabled: true
+    replicaCount: 1
+    persistence:
+      enabled: true
+      size: 1Gi
+
+  compactor:
+    enabled: true
+    replicaCount: 1
+    persistence:
+      enabled: true
+      size: 2Gi
+
+  ruler:
+    enabled: false
+
+  bucket:
+    enabled: true
+    bucketweb:
+      enabled: true
+      replicaCount: 1
+
+  rustfs:
+    enabled: false
+
+  kube-prometheus-stack:
+    enabled: false

@@ -13,6 +13,10 @@ infisical:
   credentialsSecretName: infisical-eso-credentials
 
 stores:
+  - name: infisical-thanos-dev
+    projectSlug: thanos
+    envSlug: dev
+
   - name: infisical-grafana-dev
     projectSlug: grafana
     envSlug: dev

@@ -1,0 +1,10 @@
+apiVersion: v2
+name: thanos
+description: Local Thanos Receive stack with authenticated ingestion and Query UI.
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: thanos
+    version: 0.48.0
+    repository: https://thanos-community.github.io/helm-charts
