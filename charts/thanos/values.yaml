@@ -54,6 +54,16 @@ thanos:
   query:
     enabled: true
     replicaCount: 1
+    # One replica of this component per node; extra replicas wait for free nodes.
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: thanos
+                app.kubernetes.io/instance: thanos
+                app.kubernetes.io/component: query
+            topologyKey: kubernetes.io/hostname
     service:
       httpPort: 10902
 
@@ -64,6 +74,16 @@ thanos:
     enabled: true
     mode: standalone
     replicaCount: 1
+    # One replica of this component per node; extra replicas wait for free nodes.
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: thanos
+                app.kubernetes.io/instance: thanos
+                app.kubernetes.io/component: receive
+            topologyKey: kubernetes.io/hostname
     persistence:
       enabled: true
       size: 2Gi
@@ -71,6 +91,16 @@ thanos:
   storegateway:
     enabled: true
     replicaCount: 1
+    # One replica of this component per node; extra replicas wait for free nodes.
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: thanos
+                app.kubernetes.io/instance: thanos
+                app.kubernetes.io/component: storegateway
+            topologyKey: kubernetes.io/hostname
     persistence:
       enabled: true
       size: 1Gi
