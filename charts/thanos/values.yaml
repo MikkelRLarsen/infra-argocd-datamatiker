@@ -53,7 +53,7 @@ thanos:
 
   query:
     enabled: true
-    replicaCount: 2
+    replicaCount: 1
     # One replica of this component per node; extra replicas wait for free nodes.
     affinity:
       podAntiAffinity:
