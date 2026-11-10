@@ -116,7 +116,10 @@ thanos:
     enabled: false
 
   bucket:
-    enabled: false
+    # Required by the upstream chart to create the shared object-store config Secret.
+    enabled: true
+    bucketweb:
+      enabled: false
 
   rustfs:
     enabled: false
