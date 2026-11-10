@@ -33,12 +33,19 @@ grafana:
     datasources.yaml:
       apiVersion: 1
       datasources:
+        - name: Thanos
+          uid: thanos
+          type: prometheus
+          url: http://thanos-query.thanos.svc.cluster.local:10902
+          access: proxy
+          isDefault: true
+
         - name: Prometheus
           uid: prometheus
           type: prometheus
           url: http://prometheus-server.prometheus
           access: proxy
-          isDefault: true
+          isDefault: false
 
         - name: Loki
           uid: loki

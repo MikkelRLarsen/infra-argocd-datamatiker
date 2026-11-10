@@ -7,14 +7,14 @@ k8s-monitoring:
   destinations:
     prometheus-app-metrics:
       type: prometheus
-      url: "https://prometheus.192.168.49.2.nip.io/api/v1/write"
+      url: "https://thanos-receive.192.168.49.2.nip.io/api/v1/receive"
       auth:
         type: basic
         usernameKey: username
         passwordKey: password
       secret:
         create: false
-        name: alloy-prometheus-auth
+        name: alloy-thanos-auth
         namespace: k8s-monitoring
       tls:
         insecureSkipVerify: true
@@ -547,7 +547,7 @@ k8s-monitoring:
           k8s.grafana.com/logs.job: integrations/alloys
   alloy-operator:
     deploy: true
-# Must match spokes in the Loki and Prometheus values; passwords stay in Infisical.
+# Must match the Loki and Thanos ingress users; passwords stay in Infisical.
 externalSecret:
   enabled: true
   refreshInterval: 5m
@@ -557,7 +557,7 @@ externalSecret:
       clusterSecretStore: infisical-loki-dev
       username: workload-dev
 
-    prometheus:
-      secretName: alloy-prometheus-auth
-      clusterSecretStore: infisical-prometheus-dev
+    thanos:
+      secretName: alloy-thanos-auth
+      clusterSecretStore: infisical-thanos-dev
       username: workload-dev
