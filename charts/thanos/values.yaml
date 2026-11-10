@@ -36,8 +36,8 @@ thanos:
           secretKeyRef:
             name: thanos-s3
             key: AWS_SECRET_ACCESS_KEY
+
     # Thanos still needs a config file for the bucket and endpoint.
-    # This chart-generated Secret contains no credentials.
     objstore:
       createSecret: true
       secretName: thanos-objstore
@@ -54,7 +54,7 @@ thanos:
   query:
     enabled: true
     replicaCount: 1
-    # One replica of this component per node; extra replicas wait for free nodes.
+    # One replica of this component per node
     affinity:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -67,14 +67,11 @@ thanos:
     service:
       httpPort: 10902
 
-  queryFrontend:
-    enabled: false
-
   receive:
     enabled: true
     mode: standalone
     replicaCount: 1
-    # One replica of this component per node; extra replicas wait for free nodes.
+    # One replica of this component per node
     affinity:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -91,7 +88,7 @@ thanos:
   storegateway:
     enabled: true
     replicaCount: 1
-    # One replica of this component per node; extra replicas wait for free nodes.
+    # One replica of this component per node
     affinity:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -111,18 +108,3 @@ thanos:
     persistence:
       enabled: true
       size: 2Gi
-
-  ruler:
-    enabled: false
-
-  bucket:
-    # Required by the upstream chart to create the shared object-store config Secret.
-    enabled: true
-    bucketweb:
-      enabled: false
-
-  rustfs:
-    enabled: false
-
-  kube-prometheus-stack:
-    enabled: false
