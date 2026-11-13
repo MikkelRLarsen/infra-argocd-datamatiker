@@ -24,14 +24,14 @@ k8s-monitoring:
       # Switch URL and secret.name together:
       # legacy: /loki/api/v1/push + alloy-remote-write-auth
       # v2:     /v2/loki/api/v1/push + alloy-loki-auth
-      url: "https://loki.192.168.49.2.nip.io/v2/loki/api/v1/push"
+      url: "https://loki.192.168.49.2.nip.io/loki/api/v1/push"
       auth:
         type: basic
         usernameKey: username
         passwordKey: password
       secret:
         create: false
-        name: alloy-loki-auth
+        name: alloy-remote-write-auth
         namespace: k8s-monitoring
       tls:
         insecureSkipVerify: true
