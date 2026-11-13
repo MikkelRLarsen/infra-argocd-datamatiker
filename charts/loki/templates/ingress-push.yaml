@@ -1,33 +1,55 @@
+{{- /*
+Log push endpoint for the workload spokes.
+
+Mirror of charts/prometheus/templates/ingress-remote-write.yaml — deliberately the
+same shape so both telemetry paths fail and are debugged the same way.
+
+Scoped to the single /loki/api/v1/push path. Loki's query API (/loki/api/v1/query,
+/labels, /series) is NOT exposed: Grafana reaches it over the in-cluster Service, and
+publishing a read API that answers with everyone's logs would be a different and much
+worse thing than a write endpoint.
+
+`gateway.enabled: false` in values.yaml, so the backend is the single-binary Service
+directly on the Loki HTTP port.
+*/ -}}
 {{- if .Values.pushIngress.enabled }}
 {{- $ing := .Values.pushIngress }}
+{{- if not $ing.host }}
+{{- fail "pushIngress.enabled is true but pushIngress.host is empty — set it in values-<cluster>.yaml" }}
+{{- end }}
 {{- if not .Values.pushAuth.enabled }}
-{{- fail "pushIngress requires pushAuth.enabled=true" }}
+{{- fail "pushIngress.enabled is true but pushAuth.enabled is false — refusing to publish an unauthenticated log push endpoint, which would let anyone who reaches it inject arbitrary log lines into every tenant's stream" }}
 {{- end }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-push
-  namespace: {{ .Release.Namespace }}
+  name: loki-push
+  namespace: {{ .Release.Namespace | quote }}
   labels:
     app.kubernetes.io/name: loki
     app.kubernetes.io/component: push-ingress
   annotations:
     nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: {{ printf "%s-push-auth" .Release.Name | quote }}
-    nginx.ingress.kubernetes.io/auth-realm: loki push
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: "32m"
+    nginx.ingress.kubernetes.io/auth-secret: loki-push-auth
+    nginx.ingress.kubernetes.io/auth-realm: "loki push"
     {{- with $ing.sourceRange }}
     nginx.ingress.kubernetes.io/whitelist-source-range: {{ . | quote }}
     {{- end }}
+    # Spokes batch log lines and, after an outage, drain a WAL backlog — both produce
+    # bodies well past nginx's 1m default.
+    nginx.ingress.kubernetes.io/proxy-body-size: "32m"
+    {{- with $ing.clientBodyBufferSize }}
+    # proxy-body-size above only raises the ALLOWED body size. This is the other knob:
+    # how much of the body nginx keeps in MEMORY before spilling it to a temp file on
+    # disk. See values.yaml for why it matters here.
+    nginx.ingress.kubernetes.io/client-body-buffer-size: {{ . | quote }}
+    {{- end }}
 spec:
-  ingressClassName: {{ $ing.ingressClassName | quote }}
+  ingressClassName: {{ $ing.ingressClassName }}
   tls:
     - hosts:
-        - {{ required "pushIngress.host must be set" $ing.host | quote }}
-      {{- with $ing.tlsSecretName }}
-      secretName: {{ . | quote }}
-      {{- end }}
+        - {{ $ing.host | quote }}
+      secretName: {{ $ing.tlsSecretName }}
   rules:
     - host: {{ $ing.host | quote }}
       http:

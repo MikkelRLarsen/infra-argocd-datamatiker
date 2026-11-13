@@ -21,6 +21,9 @@ k8s-monitoring:
 
     loki-logs:
       type: loki
+      # Switch URL and secret.name together:
+      # legacy: /loki/api/v1/push + alloy-remote-write-auth
+      # v2:     /v2/loki/api/v1/push + alloy-loki-auth
       url: "https://loki.192.168.49.2.nip.io/loki/api/v1/push"
       auth:
         type: basic
@@ -28,7 +31,7 @@ k8s-monitoring:
         passwordKey: password
       secret:
         create: false
-        name: alloy-loki-auth
+        name: alloy-remote-write-auth
         namespace: k8s-monitoring
       tls:
         insecureSkipVerify: true
@@ -561,3 +564,10 @@ externalSecret:
       secretName: alloy-thanos-auth
       clusterSecretStore: infisical-thanos-dev
       username: workload-dev
+
+legacyExternalSecret:
+  enabled: true
+  refreshInterval: 5m
+  clusterSecretStore: infisical-loki-dev
+  username: workload-dev
+  passwordKey: workload_dev_rw_password

@@ -122,10 +122,20 @@ s3Credentials:
 
 pushIngress:
   enabled: true
+  clientBodyBufferSize: ""
   host: loki.192.168.49.2.nip.io
   ingressClassName: nginx
   tlsSecretName: ""
   sourceRange: ""
+
+pushIngressV2:
+  enabled: true
+  host: loki.192.168.49.2.nip.io
+  ingressClassName: nginx
+  tlsSecretName: ""
+  sourceRange: ""
+  clientBodyBufferSize: ""
+  rewriteTarget: /loki/api/v1/push
 
 datasourceIngress:
   enabled: true
@@ -135,6 +145,14 @@ datasourceIngress:
   sourceRange: ""
 
 pushAuth:
+  enabled: true
+  clusterSecretStore: infisical-loki-dev
+  refreshInterval: 5m
+  spokes:
+    - name: workload-dev
+      passwordKey: workload_dev_rw_htpasswd
+
+pushAuthV2:
   enabled: true
   clusterSecretStore: infisical-loki-dev
   refreshInterval: 5m

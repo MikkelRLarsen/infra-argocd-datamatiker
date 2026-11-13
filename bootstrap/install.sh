@@ -18,14 +18,25 @@ for cmd in minikube kubectl helm; do
 done
 
 if ! minikube status >/dev/null 2>&1; then
-  echo "==> Starting minikube"
-  minikube start --cpus="$MINIKUBE_CPUS" --memory="$MINIKUBE_MEMORY"
+  echo "==> Starting minikube with 3 nodes and kindnet"
+  minikube start --nodes=3 --cni=kindnet \
+    --cpus="$MINIKUBE_CPUS" --memory="$MINIKUBE_MEMORY"
 fi
 kubectl config use-context minikube >/dev/null
 
 MINIKUBE_IP="$(minikube ip)"
 INFISICAL_HOST="infisical.${MINIKUBE_IP}.nip.io"
 INFISICAL_SITE_URL="http://${INFISICAL_HOST}"
+
+echo "==> Configuring storage for multi-node minikube"
+# The default minikube hostPath provisioner does not support multiple nodes.
+# Only new PVCs use this default; existing volumes are not migrated.
+minikube addons enable volumesnapshots
+minikube addons enable csi-hostpath-driver
+kubectl rollout status daemonset/csi-hostpathplugin -n kube-system --timeout=180s
+kubectl annotate storageclass standard storageclass.kubernetes.io/is-default-class=false --overwrite
+kubectl annotate storageclass csi-hostpath-sc storageclass.kubernetes.io/is-default-class=false --overwrite
+kubectl apply -f "$REPO_ROOT/bootstrap/storageclass.yaml"
 
 echo "==> Enabling ingress"
 minikube addons enable ingress
