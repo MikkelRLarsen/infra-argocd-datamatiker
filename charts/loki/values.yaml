@@ -56,10 +56,6 @@ loki:
 
   singleBinary:
     replicas: 3
-    # Remove chart-default anti-affinity for single-node Minikube.
-    affinity:
-      podAntiAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution: []
     extraArgs:
       - -config.expand-env=true
     extraEnvFrom:
